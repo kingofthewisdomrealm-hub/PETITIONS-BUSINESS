@@ -1,0 +1,235 @@
+<title>The House: Treasure Coast</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Limelight&family=Barlow:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a casino floor plan. Marquee, house math placard, the chip rack (price list), the floor map (three rooms + closed tables), then dealt hands per room. Matches the repo's prospect board: felt + brass, single dark look set explicitly. */
+:root{
+  color-scheme:dark;
+  --felt:#0f3d2c; --felt-deep:#0a2a1f; --rail:#3b1f14; --brass:#d9b25f; --brass-dim:#9c7f43;
+  --card:#f7f2e6; --ink:#1a1a1a; --ink-muted:#5b5348; --red:#b3262b; --cream:#efe6cf; --cream-muted:#b9b29d;
+  --whale:#5b2a86; --table:#2b2b2b; --slot:#b3262b; --closed:#6b655a;
+  --display:"Limelight","Didot","Bodoni 72",Georgia,serif;
+  --body:"Barlow","Segoe UI",system-ui,sans-serif;
+  --mono:"DM Mono",ui-monospace,Menlo,monospace;
+}
+body{background:var(--felt-deep);color:var(--cream);font-family:var(--body);font-size:15px;line-height:1.5;
+  background-image:radial-gradient(ellipse at 50% 0%,var(--felt) 0%,var(--felt-deep) 70%)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--felt-deep)}
+.wrap{max-width:1100px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:28px}
+a{color:var(--brass)}
+.marquee{border:2px solid var(--brass);border-radius:10px;padding:24px 20px;text-align:center;
+  box-shadow:inset 0 0 0 5px var(--felt-deep),inset 0 0 0 6px var(--brass-dim)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass)}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(32px,7vw,58px);line-height:1.05;margin:6px 0 10px;color:var(--brass);text-wrap:balance;letter-spacing:.02em}
+.sub{color:var(--cream-muted);margin:0 auto;max-width:62ch}
+.sub b{color:var(--cream)}
+h2.sec{font-family:var(--display);font-weight:400;color:var(--brass);font-size:26px;margin:0;letter-spacing:.03em;text-wrap:balance}
+.lede{margin:0;color:var(--cream-muted);max-width:68ch}
+
+/* House math */
+.rules{background:var(--rail);border:1px solid var(--brass-dim);border-radius:8px;padding:18px;display:grid;gap:14px}
+.rulegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.rule{border-top:1px solid var(--brass-dim);padding-top:10px;display:grid;gap:4px;min-width:0}
+.rule .term{font:500 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--brass)}
+.rule h3{margin:0;font-size:17px;font-weight:700;color:var(--cream)}
+.rule p{margin:0;font-size:14px;color:var(--cream-muted)}
+
+/* Chip rack price list */
+.rackrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.price{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center;min-width:0}
+.bigchip{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;color:#fff;font:700 12px var(--mono);text-align:center;line-height:1.1;
+  border:5px dashed rgba(255,255,255,.75);box-shadow:0 0 0 3px #000,0 3px 0 3px rgba(0,0,0,.35)}
+.price h3{margin:0;font-size:16px}
+.price p{margin:0;font-size:13px;color:var(--cream-muted)}
+.price .amt{font-family:var(--mono);color:var(--cream);font-size:14px;font-variant-numeric:tabular-nums}
+
+/* Floor map */
+.floor{display:grid;grid-template-columns:1.1fr 1fr 1fr;grid-template-areas:"door slots slots" "door tables whales" "closed closed closed";gap:10px}
+.room{border:2px solid var(--brass-dim);border-radius:8px;padding:12px 14px;display:grid;gap:4px;align-content:start;min-width:0;cursor:pointer;background:rgba(0,0,0,.18);color:inherit;text-align:left;font:inherit}
+.room:hover,.room[aria-pressed="true"]{border-color:var(--brass);background:rgba(217,178,95,.10)}
+.room:focus-visible,.chipbtn:focus-visible,.copy:focus-visible,a:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+.room .rn{font-family:var(--display);color:var(--brass);font-size:20px}
+.room .rd{font-size:13px;color:var(--cream-muted)}
+.room .count{font:500 12px var(--mono);color:var(--cream);letter-spacing:.06em}
+.door{grid-area:door;border-style:dashed}
+.r-slots{grid-area:slots} .r-tables{grid-area:tables} .r-whales{grid-area:whales;border-color:#8d5bbd}
+.r-closed{grid-area:closed;border-style:dotted;cursor:default}
+.r-closed:hover{background:rgba(0,0,0,.18);border-color:var(--brass-dim)}
+.closedlist{margin:4px 0 0;padding-left:18px;display:grid;gap:3px;font-size:13px;color:var(--cream-muted)}
+.closedlist b{color:var(--cream)}
+@media (max-width:640px){.floor{grid-template-columns:1fr;grid-template-areas:"door" "slots" "tables" "whales" "closed"}}
+
+/* Hands */
+.roomsec{display:grid;gap:12px}
+.roomhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;border-bottom:1px solid var(--brass-dim);padding-bottom:6px}
+.roomhead h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0;color:var(--brass)}
+.roomhead p{margin:0;color:var(--cream-muted);font-size:14px;flex-basis:100%}
+.hand{background:var(--card);color:var(--ink);border-radius:10px;padding:16px 16px 14px;display:grid;grid-template-columns:58px 1fr;gap:6px 14px;
+  box-shadow:0 3px 0 rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.25);position:relative}
+.pchip{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:20px;color:#fff;
+  border:4px dashed rgba(255,255,255,.75);box-shadow:0 0 0 3px var(--ink),0 2px 0 3px rgba(0,0,0,.3);font-variant-numeric:tabular-nums}
+.whales .pchip{background:var(--whale)} .tables .pchip{background:var(--table)} .slots .pchip{background:var(--slot)}
+.head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;min-width:0}
+.name{font-weight:700;font-size:20px;margin:0}
+.tag{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:3px;border:1px solid var(--ink-muted);color:var(--ink-muted)}
+.tag.hot{background:var(--red);border-color:var(--red);color:#fff}
+.body{grid-column:2;display:grid;gap:10px;min-width:0}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px 18px;font-size:14px}
+.meta>div{min-width:0}
+.k{font:500 11px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);display:block}
+.contact{font-family:var(--mono);font-size:13px;word-break:break-word}
+.copy{font:500 11px var(--mono);border:1px solid var(--ink-muted);background:transparent;color:var(--ink-muted);border-radius:3px;padding:1px 6px;margin-left:6px;cursor:pointer}
+.play{margin:0;padding:9px 12px;background:var(--felt);color:var(--cream);border-radius:6px;font-size:14px}
+.play b{color:var(--brass);font-family:var(--mono);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:12px;margin-right:6px}
+.warn{margin:0;font-size:13px;color:var(--red)}
+.src a{color:var(--ink-muted);font-size:13px}
+.suit{position:absolute;top:10px;right:14px;font-size:18px;color:var(--ink-muted);opacity:.5}
+.suit.r{color:var(--red)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.chipbtn{font:700 13px var(--body);letter-spacing:.04em;text-transform:uppercase;color:#fff;background:var(--table);border:3px dashed rgba(255,255,255,.55);padding:8px 16px;border-radius:999px;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.45)}
+.chipbtn[data-f="whales"]{background:var(--whale)} .chipbtn[data-f="slots"]{background:var(--slot)} .chipbtn[data-f="all"]{background:var(--felt)}
+.chipbtn[aria-pressed="true"]{outline:3px solid var(--brass);outline-offset:2px}
+footer{color:var(--cream-muted);font-size:13px;max-width:75ch;margin:0 auto;text-align:center;display:grid;gap:6px}
+@media (max-width:520px){.hand{grid-template-columns:1fr}.body{grid-column:1}.pchip{width:44px;height:44px;font-size:17px}}
+@media (prefers-reduced-motion:no-preference){.hand{transition:transform .15s}.hand:hover{transform:translateY(-2px)}}
+</style>
+
+<div class="wrap">
+  <header class="marquee">
+    <div class="eyebrow">Brevard · Indian River · St. Lucie · Martin · odds checked Oct 24, 2026</div>
+    <h1>The House: Treasure Coast</h1>
+    <p class="sub">A casino doesn't win because it's lucky. <b>It wins because it picks the games, sets the prices, gets paid on every hand, and never lets one gambler sink it.</b> Run the petition business the same way and you can't lose over time, even when single campaigns do.</p>
+  </header>
+
+  <section class="rules" aria-labelledby="h-math">
+    <h2 class="sec" id="h-math">House math: the 8 rules that make the house win</h2>
+    <div class="rulegrid">
+      <div class="rule"><span class="term">House edge</span><h3>Get paid on every hand</h3><p>Charge for the Feasibility study up front, every time. Win or lose, the house got its cut. Price by time and milestones, never by whether the client wins.</p></div>
+      <div class="rule"><span class="term">The cage</span><h3>Cash before chips</h3><p>50% deposit to start. Verification fees ($3.60 to $4.24 per petition in Brevard) paid before you file. A casino never lends you chips and hopes.</p></div>
+      <div class="rule"><span class="term">Game mix</span><h3>Slots pay the rent</h3><p>Small, fast, repeatable jobs (candidate petitions, pressure sprints) keep the lights on. Tables pay the staff. Whales pay for growth. Run all three rooms.</p></div>
+      <div class="rule"><span class="term">Bankroll</span><h3>Never bet the house on one whale</h3><p>Keep any one client under about a third of your revenue. The biggest wallet on this floor is under criminal investigation. Whales leave. Rent doesn't.</p></div>
+      <div class="rule"><span class="term">Eye in the sky</span><h3>Watch every signature</h3><p>Check every sheet before turn-in. Florida's AG opened 46 probes into one sponsor's circulators. In a casino, cheating gets you banned. In petitions, it gets you indicted.</p></div>
+      <div class="rule"><span class="term">Closed tables</span><h3>Don't deal illegal games</h3><p>No referendums on rezonings or building rules. No paid recall circulators. No per-signature pay. The house doesn't run games the state can raid.</p></div>
+      <div class="rule"><span class="term">Comps</span><h3>Give the free buffet</h3><p>A free 20-minute plan ("1,000 clicks are worth zero; 1,000 voters are worth a vote") gets people through the door. The study is where they start paying.</p></div>
+      <div class="rule"><span class="term">Players' club</span><h3>Bring them back every cycle</h3><p>Every campaign ends with a case study and a testimonial. Elections come back every two years, and so do your best clients.</p></div>
+    </div>
+  </section>
+
+  <section style="display:grid;gap:14px" aria-labelledby="h-rack">
+    <h2 class="sec" id="h-rack">The chip rack: what you sell</h2>
+    <div class="rackrow">
+      <div class="price"><span class="bigchip" style="background:var(--slot)">SLOT</span><div><h3>Pressure Sprint · Candidate petition</h3><p class="amt">Flat fee, under the qualifying fee</p><p>Fast, small, repeatable.</p></div></div>
+      <div class="price"><span class="bigchip" style="background:#1d4f9c">STUDY</span><div><h3>Petition Feasibility</h3><p class="amt">$2,500–$7,500 local · $10k–$25k county</p><p>Paid up front. Half credits to Launch within 30 days.</p></div></div>
+      <div class="price"><span class="bigchip" style="background:var(--table)">TABLE</span><div><h3>Petition Launch</h3><p class="amt">$10,000–$40,000 + legal</p><p>50% to start, 50% at launch.</p></div></div>
+      <div class="price"><span class="bigchip" style="background:var(--whale)">HIGH ROLLER</span><div><h3>Full-Service Campaign</h3><p class="amt">Costs + 15–25% fee</p><p>Monthly or by milestone. Never per signature.</p></div></div>
+    </div>
+    <p class="lede">Starting estimates built from costs, not a market survey. Swap in your own 10 years of numbers.</p>
+  </section>
+
+  <section style="display:grid;gap:14px" aria-labelledby="h-floor">
+    <h2 class="sec" id="h-floor">The floor map</h2>
+    <p class="lede">People walk in the front door and see the slots first. Some sit at a table. A few get walked to the high-roller room. Tap a room to see who's in it.</p>
+    <div class="floor" role="group" aria-label="Filter by room">
+      <div class="room door" style="cursor:default"><span class="rn">Front door</span><span class="rd">The free buffet: a 20-minute discovery call and a free plan. Everyone gets one. Nobody gets two.</span></div>
+      <button class="room r-slots" type="button" id="room-slots" data-f="slots" aria-pressed="false"><span class="rn">Slot floor</span><span class="rd">Small, fast, lots of them. Pays the rent.</span><span class="count" data-count="slots"></span></button>
+      <button class="room r-tables" type="button" id="room-tables" data-f="tables" aria-pressed="false"><span class="rn">Table games</span><span class="rd">Local groups with a fight and a budget.</span><span class="count" data-count="tables"></span></button>
+      <button class="room r-whales" type="button" id="room-whales" data-f="whales" aria-pressed="false"><span class="rn">High-roller room</span><span class="rd">State and national money. Big wins, big risk.</span><span class="count" data-count="whales"></span></button>
+      <div class="room r-closed"><span class="rn">Closed tables</span><span class="rd">The house doesn't deal these. Say no in the first 15 minutes and sell the legal version instead.</span>
+        <ul class="closedlist">
+          <li><b>Rezoning or building-rule referendums</b> (like tightening Cocoa Beach's 45-foot limit): banned by Fla. Stat. 163.3167(8).</li>
+          <li><b>Paid recall circulators:</b> a crime under Fla. Stat. 100.361. Volunteers only.</li>
+          <li><b>Per-signature pay:</b> a felony for statewide petitions.</li>
+          <li><b>Port St. Lucie's Riverland complex:</b> rezoned Aug. 24. The table closed before you sat down.</li>
+          <li><b>Stuart's ballfield amendment:</b> the commission put it on the ballot itself. No buyer.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="chips" role="group" aria-label="Show room">
+    <button class="chipbtn" type="button" id="f-all" data-f="all" aria-pressed="true">Whole floor</button>
+    <button class="chipbtn" type="button" id="f-whales" data-f="whales" aria-pressed="false">High rollers</button>
+    <button class="chipbtn" type="button" id="f-tables" data-f="tables" aria-pressed="false">Tables</button>
+    <button class="chipbtn" type="button" id="f-slots" data-f="slots" aria-pressed="false">Slots</button>
+  </div>
+
+  <div id="rooms" style="display:grid;gap:28px"></div>
+
+  <footer>
+    <span>Contacts are only what a public source showed. "Verify" means a third-party listing; "public channel" means a private person you reach only through their public petition page or a public meeting. Never dig up a private person's home details.</span>
+    <span>Not legal advice. Have a Florida election lawyer sign off on every campaign before money moves. Full research, legal table and sources are in the Treasure Coast playbook doc.</span>
+  </footer>
+</div>
+
+<script>
+const ROOMS=[
+ {key:"whales",name:"High-roller room",note:"They pay for a cause, and they pay big. Comp them with a sharp compliance pitch. Never let one of them be more than a third of your book."},
+ {key:"tables",name:"Table games",note:"Local groups with a real fight and some money. Sell the Feasibility study first, then the Launch."},
+ {key:"slots",name:"Slot floor",note:"Cheap, fast, repeatable. Flat prices. Volume is the point."}
+];
+const P=[
+{r:"whales",n:"Smart & Safe Florida",a:"Statewide · 2028",issue:"Recreational marijuana amendment",money:"Trulieve put about $67 million toward the 2026 try. Must restart ~880,000 signatures.",play:"Pitch a compliance-first Treasure Coast field team at an hourly rate.",c:"Not verified. Get it from the committee's Division of Elections filing.",w:"The AG opened 46 criminal probes into its circulators in Jan. 2026. They need a clean vendor; you need a clean name. Contract tight.",src:"https://www.cannabisbusinesstimes.com/us-states/florida/news/15836634/florida-may-have-3-options-to-legalize-adultuse-cannabis-in-2028"},
+{r:"whales",n:"Florida Decides Healthcare",a:"Statewide · 2028",issue:"Medicaid expansion amendment",money:"Funded mostly by The Fairness Project. Cancer Society and Heart Association joined Feb. 2026. Collecting since Feb. 1.",play:"Same field team, plus training for their volunteer hubs. Contact: Mitch Emerson, Executive Director.",c:"floridadecideshealthcare.org (contact page)",w:"",src:"https://floridaphoenix.com/2026/02/10/coalition-working-on-medicaid-expansion-in-florida-grows-by-two/"},
+{r:"whales",n:"Florida Realtors & Home Builders",a:"Statewide",issue:"Septic-to-sewer 2030 deadline",money:"Both backed septic-friendly bills with Associated Industries of Florida. Florida Realtors published septic guidance in Sept. 2026.",play:"Verified-homeowner petitions by legislative district for the 2027 session.",c:"floridarealtors.org · fhba.com (start with Treasure Coast local chapters)",w:"You're a builder. Join the local builders' group first and pitch as a member.",src:"https://historiccity.com/?p=22421"},
+{r:"whales",n:"Humane World for Animals",a:"Statewide",issue:"Puppy-mill pet stores",money:"Runs a statewide campaign; says 83 Florida localities passed humane pet-store ordinances.",play:"Pressure petitions in Treasure Coast towns without an ordinance; enforcement petitions in Brevard.",c:"humaneworld.org",w:"Brevard already passed its ordinance in 2019. Pet-store owners push back hard.",src:"https://www.humaneworld.org/en/blog/our-campaign-end-puppy-mill-pet-store-pipeline-heats-florida-and-texas"},
+{r:"whales",n:"ACLU of Florida",a:"Statewide",issue:"License-plate cameras",money:"The state pulled the cameras off state roads by Sept. 30. City and county roads are still open.",play:"City-by-city ordinance pressure campaigns, starting with Port St. Lucie.",c:"aclufl.org (verify current office)",w:"",src:"https://floridaphoenix.com/2026/09/30/deadline-hits-for-law-agencies-to-remove-license-plate-readers-from-state-roads/"},
+{r:"whales",n:"Federation of Manufactured Home Owners",a:"Statewide",issue:"Mobile-home lot rents",money:"Around since 1962; speaks for 1.2 million owners. The 2026 rent bill died.",play:"Park-by-park resident petitions to legislators before the 2027 session. Price per park, not per person.",c:"fmo.org · (727) 530-7539 (verify, third-party listing)",w:"",src:"https://flsenate.gov/Session/Bill/2026/703"},
+
+{r:"tables",n:"Indian River Neighborhood Association",a:"Sebastian",issue:"600+ acres annexed for 1,500+ homes",money:"Long-running membership group. Its chair says 500 of 700 Sebastian residents it heard from said no.",play:"Sell a Feasibility study: can Sebastian voters legally get a say?",c:"indianriverna.com",w:"The land-use ban may block a ballot route. Counsel decides.",src:"https://cw34.com/news/local/south-florida-treasure-coast-news-sebastian-moves-to-annex-over-600-acres-for-new-housing-developments-county-road-510-high-density-growth-redevelopment-in-florida-city-council-reactin-future-growth-residential-communities-indian-river-neighborhood-assoc"},
+{r:"tables",n:"Septic-to-sewer HOA groups",a:"Indian River County",issue:"About 27,000 homes must convert; $15,000–$22,000 each",money:"70+ Indian River Shores owners already petitioned on their own. HOAs in conversion zones can split the cost.",play:"Shared-cost legislative petition, timed to the 2027 session.",c:"Public channel: HOA presidents in priority areas",w:"",src:"https://cbs12.com/news/local/story/40000-dollars-ditch-septic-indian-river-county-homeowners-face-costly-sewer-mandate-connect-homes-sewer-27000-homes-state-mandate-cost-expense-indian-river-lagoon-water-quality"},
+{r:"tables",n:"Clean Water Coalition",a:"Indian River County",issue:"Lagoon funding and sewer hookup help",money:"Hundreds of business partners. President Judy Orcutt.",play:"Partner on the septic petition above. They bring credibility; the HOAs bring signers.",c:"cwc-irc.org · (772) 473-8475 (verify, third-party listing)",w:"",src:"https://indianriverguardian.com/2020/01/21/youngs-produce-becomes-clean-water-coalitions-600th-partner/"},
+{r:"tables",n:"Port St. Lucie camera opponents",a:"Port St. Lucie",issue:"Online petition near 1,000 names to remove Flock cameras",money:"Residents are low budget. Pair them with #5 (ACLU) for the money.",play:"Free offer: turn online clicks into verified PSL voter signatures.",c:"Public channel: the online petition page. Council: (772) 871-5159 · mayor@cityofpsl.com",w:"",src:"https://portstlucietalks.com/port-st-lucie-residents-push-to-remove-flock-cameras/"},
+{r:"tables",n:"Vero Beach Preservation Alliance",a:"Vero Beach",issue:"City land and Three Corners",money:"Ran a successful citizen charter petition in 2022. Knows how to raise money.",play:"Offer a debrief on 2022 and what changed in the law since.",c:"vbpreservationalliance.org",w:"Only limits on selling or leasing city land, and only if counsel clears them.",src:"https://vbpreservationalliance.org/referendum"},
+{r:"tables",n:"St. Lucie road builders",a:"St. Lucie County",issue:"Half-cent sales tax renewal",money:"It's Ballot #14 on Nov. 3 after a 3-2 vote. If it fails, it returns in 2028 as a new tax.",play:"If it fails: a 2028 voter-contact and door-knocking campaign, paid by a private coalition.",c:"Public channel: contractor and business groups",w:"Not a petition: the county places it. Public money can't fund the campaign.",src:"https://stlucievoice.com/2026/08/14/st-lucie-puts-half-cent-tax-renewal-on-26-ballot-amid-amendment-3-concerns/"},
+{r:"tables",n:"Brevard tax-cap watchdogs",a:"Brevard County",issue:"$5M shelter spending vs. the charter's tax cap",money:"Taxpayer groups, moderate budgets.",play:"Charter amendment (4% of voters in every district) or a pressure petition.",c:"Public channel: county public-comment record",w:"",src:"https://citizenportal.ai/articles/9996127/florida/brevard-county/residents-press-commissioners-on-5-million-shelter-allocation-and-petition-county-to-act-on-titusville-puppy-store"},
+{r:"tables",n:"SR 528 corridor businesses",a:"Brevard County",issue:"$3-per-passenger Port Canaveral impact fee",money:"Merritt Island and Cape businesses losing to traffic.",play:"Pressure petition to the county and the port. Pitch the businesses, not the residents.",c:"Public channel",w:"The port is its own authority, so a ballot route is doubtful.",src:"https://citizenportal.ai/articles/10165815/florida/brevard-county/residents-urge-impact-fees-for-port-canaveral-projects-and-plead-to-save-palm-bay-pool"},
+
+{r:"slots",n:"2028 candidates",a:"All four counties",issue:"Qualifying fee of 4% to 6% of the seat's salary",money:"The petition route (1% of district voters) costs them less than the fee.",play:"Flat-price qualify-by-petition service, mailed to every new filer.",c:"Public filings at each county's elections office",w:"",src:"https://www.voteindianriver.gov/Documents/Campaigns/Candidates/2026%20Methods%20of%20Qualifying%20for%20the%20Ballot%20and%20qualifying%20info.pdf?t=202512051044550"},
+{r:"slots",n:"Condo owner committees",a:"Barrier islands",issue:"Big milestone and reserve special assessments",money:"Assessments of $10,000 to $100,000+ are becoming common.",play:"Transparency petitions for records and a town hall, not board recalls.",c:"Public channel: owner groups",w:"Covenant sells repairs to these boards. Never take work in a building Covenant bids or works in.",src:"https://www.propertyexemption.com/property-tax/condo-special-assessments-florida/"},
+{r:"slots",n:"Titusville chicken-farm neighbors",a:"Titusville",u:1,issue:"Council rehears the 7.5-acre rezoning Nov. 10",money:"Small, urgent.",play:"Pressure Sprint of nearby voters before Nov. 10.",c:"Public channel: the Nov. 10 hearing",w:"A referendum is illegal here (rezoning).",src:"https://citizenportal.ai/articles/10971117/florida/brevard-county/titusville/neighbors-urge-council-to-reverse-rezoning-after-proposed-chicken-farm-sparks-health-flooding-and-nuisance-concerns"},
+{r:"slots",n:"Mobile-home park owners",a:"Fort Pierce and beyond",issue:"Rising lot rents (Tall Pines and others)",money:"Fixed incomes, but many people per park.",play:"Park-level organizing plus the 2027 petition with #6 (FMO).",c:"Public channel: park homeowner associations",w:"",src:"https://cp.soar.com/articles/3731346/Fort-Pierce/St-Lucie-County/Florida/Residents-raise-concerns-over-Tall-Pines-mobile-home-park-expansion-plans"},
+{r:"slots",n:"Vero Beach A1A families",a:"Vero Beach",issue:"Petitioning FDOT to restore a cut sidewalk",money:"Tiny.",play:"Do it cheap. Use it as a case study and testimonial.",c:"Public channel",w:"",src:"https://nationaltoday.com/us/fl/vero-beach/news/2026/04/13/vero-beach-residents-petition-for-sidewalk-to-protect-kids/"},
+{r:"slots",n:"Fellsmere residents",a:"Fellsmere",issue:"231-unit Legacy Landing was denied in May; it could come back",money:"Small.",play:"Pressure petition if it returns. No ballot route.",c:"Public channel",w:"",src:"https://www.aol.com/articles/florida-city-rejects-proposal-231-043730701.html"}
+];
+const SUITS=["♠","♥","♦","♣"];
+function esc(s){return String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+const host=document.getElementById("rooms");
+let i=0;
+ROOMS.forEach(R=>{
+  const list=P.filter(p=>p.r===R.key);
+  document.querySelectorAll(`[data-count="${R.key}"]`).forEach(e=>e.textContent=list.length+" players");
+  const sec=document.createElement("section");sec.className="roomsec "+R.key;sec.dataset.r=R.key;
+  sec.innerHTML=`<div class="roomhead"><h2>${R.name}</h2><p>${R.note}</p></div>`;
+  list.forEach(p=>{
+    i++;const s=SUITS[i%4];
+    const el=document.createElement("article");el.className="hand";
+    el.innerHTML=`<span class="suit ${s==='♥'||s==='♦'?'r':''}" aria-hidden="true">${s}</span>
+    <div class="pchip">${i}</div>
+    <div class="head"><h3 class="name">${esc(p.n)}</h3><span class="tag">${esc(p.a)}</span>${p.u?'<span class="tag hot">table closing</span>':''}</div>
+    <div class="body">
+      <div class="meta">
+        <div><span class="k">The game</span>${esc(p.issue)}</div>
+        <div><span class="k">Their chips</span>${esc(p.money)}</div>
+        <div><span class="k">Cashier window</span><span class="contact">${esc(p.c)}</span><button class="copy" type="button" data-c="${esc(p.c)}">copy</button></div>
+      </div>
+      <p class="play"><b>Your play</b>${esc(p.play)}</p>
+      ${p.w?`<p class="warn">⚠ House rule: ${esc(p.w)}</p>`:""}
+      <div class="src"><a href="${p.src}" target="_blank" rel="noopener">Source</a></div>
+    </div>`;
+    sec.appendChild(el);
+  });
+  host.appendChild(sec);
+});
+host.addEventListener("click",e=>{
+  const b=e.target.closest(".copy");if(!b)return;
+  const done=()=>{b.textContent="copied";setTimeout(()=>b.textContent="copy",1400)};
+  try{navigator.clipboard.writeText(b.dataset.c).then(done,()=>sel(b))}catch(_){sel(b)}
+});
+function sel(b){const r=document.createRange();r.selectNodeContents(b.previousElementSibling);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="press ⌘C"}
+const ctrls=[...document.querySelectorAll(".chipbtn,.room[data-f]")];
+function show(f){
+  ctrls.forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.f===f)));
+  document.querySelectorAll(".roomsec").forEach(s=>s.hidden=!(f==="all"||s.dataset.r===f));
+}
+ctrls.forEach(c=>c.addEventListener("click",()=>{show(c.dataset.f);if(c.classList.contains("room"))host.scrollIntoView({behavior:"smooth",block:"start"})}));
+</script>

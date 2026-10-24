@@ -1,81 +1,112 @@
 <title>Petition Prospect Board</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Limelight&family=Barlow:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a clipboard-style call sheet — summary strip, filter chips, then numbered prospect rows that stack on phones */
+/* Layout: a casino card table — marquee header, "house rules" placard, chip-rack filters, then one dealt hand per prospect. Deliberate single dark look (felt + brass), set explicitly. */
 :root{
-  --bg:#f6f7f4; --surface:#ffffff; --fg:#1d2420; --muted:#5d6861; --line:#d9ded8;
-  --accent:#1f6b4f; --accent-soft:#e1efe8; --warn:#9a5b00; --warn-soft:#fbf0dc; --hot:#a8322a; --hot-soft:#f8e3e0;
-  --display:"Archivo Narrow","Arial Narrow",Arial,sans-serif;
-  --body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+  --felt:#0f3d2c; --felt-deep:#0a2a1f; --rail:#3b1f14; --brass:#d9b25f; --brass-dim:#9c7f43;
+  --card:#f7f2e6; --ink:#1a1a1a; --ink-muted:#5b5348; --red:#b3262b; --cream:#efe6cf; --cream-muted:#b9b29d;
+  --chip1:#b3262b; --chip2:#1d4f9c; --chip3:#1f7a46; --chip4:#2b2b2b;
+  --display:"Limelight","Didot","Bodoni 72",Georgia,serif;
+  --body:"Barlow","Segoe UI",system-ui,sans-serif;
+  --mono:"DM Mono",ui-monospace,Menlo,monospace;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#141a17; --surface:#1c2420; --fg:#e6ebe7; --muted:#9aa69f; --line:#2f3a34;
-  --accent:#6cc59d; --accent-soft:#1f3a2e; --warn:#e8b55c; --warn-soft:#3a2e17; --hot:#f08a80; --hot-soft:#3d211e; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#141a17; --surface:#1c2420; --fg:#e6ebe7; --muted:#9aa69f; --line:#2f3a34;
-  --accent:#6cc59d; --accent-soft:#1f3a2e; --warn:#e8b55c; --warn-soft:#3a2e17; --hot:#f08a80; --hot-soft:#3d211e; color-scheme:dark}
-body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
-.wrap{max-width:1100px;margin:0 auto;padding-block:28px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
-h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,5vw,40px);line-height:1.05;margin:0;text-wrap:balance;letter-spacing:-.01em}
-.sub{color:var(--muted);margin:6px 0 0;max-width:68ch}
-.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
-.flags{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
-.flag{background:var(--warn-soft);border-left:3px solid var(--warn);padding:12px 14px;border-radius:4px}
-.flag b{display:block;font-family:var(--display);font-size:16px;margin-bottom:2px}
-.flag p{margin:0;font-size:14px}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{font:600 13px var(--body);border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:6px 12px;border-radius:999px;cursor:pointer}
-.chip[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
-.chip:focus-visible,.copy:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.list{display:grid;gap:12px}
-.row{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;display:grid;grid-template-columns:44px 1fr;gap:4px 14px}
-.rank{font-family:var(--display);font-size:28px;font-weight:700;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums}
+body{background:var(--felt-deep);color:var(--cream);font-family:var(--body);font-size:15px;line-height:1.5;
+  background-image:radial-gradient(ellipse at 50% 0%,var(--felt) 0%,var(--felt-deep) 70%)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--felt-deep)}
+.wrap{max-width:1100px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:24px}
+.marquee{border:2px solid var(--brass);border-radius:10px;padding:22px 20px;text-align:center;position:relative;
+  box-shadow:inset 0 0 0 5px var(--felt-deep),inset 0 0 0 6px var(--brass-dim)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass)}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,6vw,50px);line-height:1.05;margin:6px 0 8px;color:var(--brass);text-wrap:balance;letter-spacing:.02em}
+.sub{color:var(--cream-muted);margin:0 auto;max-width:64ch}
+.sub b{color:var(--cream)}
+.legend{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;margin-top:14px;font-size:13px;color:var(--cream-muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:12px;height:12px;border-radius:50%;border:2px dashed rgba(255,255,255,.7);display:inline-block}
+
+.rules{background:var(--rail);border:1px solid var(--brass-dim);border-radius:8px;padding:16px 18px;display:grid;gap:10px}
+.rules h2{font-family:var(--display);font-weight:400;color:var(--brass);font-size:22px;margin:0;letter-spacing:.03em}
+.rules ol{margin:0;padding-left:20px;display:grid;gap:6px}
+.rules li::marker{color:var(--brass);font-family:var(--mono)}
+.rules b{color:var(--cream)}
+
+.rack{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.chip{font:700 13px var(--body);letter-spacing:.04em;text-transform:uppercase;color:#fff;background:var(--chip4);border:3px dashed rgba(255,255,255,.55);
+  padding:8px 16px;border-radius:999px;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.45)}
+.chip[data-f="campaign"]{background:var(--chip1)} .chip[data-f="firm"]{background:var(--chip2)}
+.chip[data-f="fl"]{background:var(--chip3)} .chip[data-f="urgent"]{background:#7a4a10}
+.chip[aria-pressed="true"]{outline:3px solid var(--brass);outline-offset:2px}
+.chip:focus-visible,.copy:focus-visible,a:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+
+.tier{display:grid;gap:12px}
+.tier-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;border-bottom:1px solid var(--brass-dim);padding-bottom:6px}
+.tier-head h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0;color:var(--brass)}
+.tier-head .cards{font-family:var(--mono);font-size:15px;color:var(--cream)}
+.tier-head p{margin:0;color:var(--cream-muted);font-size:14px;flex-basis:100%}
+.tier-head .red{color:#ff7a7f}
+
+.hand{background:var(--card);color:var(--ink);border-radius:10px;padding:16px 16px 14px;display:grid;grid-template-columns:58px 1fr;gap:6px 14px;
+  box-shadow:0 3px 0 rgba(0,0,0,.35),0 10px 24px rgba(0,0,0,.25);position:relative}
+.pchip{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:20px;color:#fff;
+  border:4px dashed rgba(255,255,255,.75);box-shadow:0 0 0 3px var(--ink),0 2px 0 3px rgba(0,0,0,.3);font-variant-numeric:tabular-nums}
+.t1 .pchip{background:var(--chip1)} .t2 .pchip{background:var(--chip2)} .t3 .pchip{background:var(--chip3)} .t4 .pchip{background:var(--chip4)}
 .head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;min-width:0}
-.name{font-family:var(--display);font-size:20px;font-weight:700;margin:0}
-.pill{font:500 11px var(--mono);letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:3px;background:var(--accent-soft);color:var(--accent)}
-.pill.firm{background:var(--line);color:var(--fg)}
-.pill.due{background:var(--hot-soft);color:var(--hot)}
+.name{font-family:var(--body);font-weight:700;font-size:20px;margin:0}
+.tag{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:3px;border:1px solid var(--ink-muted);color:var(--ink-muted)}
+.tag.camp{border-color:var(--red);color:var(--red)} .tag.firm{border-color:var(--chip2);color:var(--chip2)}
+.tag.hot{background:var(--red);border-color:var(--red);color:#fff}
 .body{grid-column:2;display:grid;gap:10px;min-width:0}
-.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 18px;font-size:14px}
-.k{font:500 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:block}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px 18px;font-size:14px}
+.k{font:500 11px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);display:block}
 .contact{font-family:var(--mono);font-size:13px;word-break:break-word;user-select:all}
-.copy{font:500 11px var(--mono);border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:3px;padding:1px 6px;margin-left:6px;cursor:pointer}
+.copy{font:500 11px var(--mono);border:1px solid var(--ink-muted);background:transparent;color:var(--ink-muted);border-radius:3px;padding:1px 6px;margin-left:6px;cursor:pointer}
 .why{margin:0}
-.next{margin:0;padding:8px 10px;background:var(--accent-soft);border-radius:4px;font-size:14px}
-.next b{color:var(--accent)}
-.warn{margin:0;font-size:13px;color:var(--warn)}
-.src a{color:var(--muted);font-size:13px}
-footer{color:var(--muted);font-size:13px;max-width:75ch}
-@media (max-width:520px){.row{grid-template-columns:1fr}.body{grid-column:1}.rank{font-size:22px}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.play{margin:0;padding:9px 12px;background:var(--felt);color:var(--cream);border-radius:6px;font-size:14px}
+.play b{color:var(--brass);font-family:var(--mono);font-weight:500;text-transform:uppercase;letter-spacing:.06em;font-size:12px;margin-right:6px}
+.warn{margin:0;font-size:13px;color:var(--red)}
+.src a{color:var(--ink-muted);font-size:13px}
+.suit{position:absolute;top:10px;right:14px;font-size:18px;color:var(--ink-muted);opacity:.5}
+.suit.r{color:var(--red)}
+footer{color:var(--cream-muted);font-size:13px;max-width:75ch;margin:0 auto;text-align:center}
+@media (max-width:520px){.hand{grid-template-columns:1fr}.body{grid-column:1}.pchip{width:44px;height:44px;font-size:17px}}
+@media (prefers-reduced-motion:no-preference){.hand{transition:transform .15s}.hand:hover{transform:translateY(-2px)}}
 </style>
 
 <div class="wrap">
-  <header>
-    <div class="eyebrow">Call sheet · verified Oct 24, 2026</div>
-    <h1>Top 20 petition prospects to call this week</h1>
-    <p class="sub">Two kinds of buyers. <b>Campaigns</b> need signatures and pay for them. <b>Firms</b> win those contracts and need experienced leads to run crews. Ranked by deadline, money, and where your Florida residency gives you an edge.</p>
+  <header class="marquee">
+    <div class="eyebrow">The house is open · odds checked Oct 24, 2026</div>
+    <h1>Petition Prospect Table</h1>
+    <p class="sub">Twenty hands, dealt from best to worst. <b>Campaigns</b> are the players with the money. <b>Firms</b> are the dealers who need help running tables. Bet your time where the odds and the payout are highest.</p>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--chip1)"></i>Red chip: royal flush, bet big</span>
+      <span><i class="dot" style="background:var(--chip2)"></i>Blue chip: strong hand, raise</span>
+      <span><i class="dot" style="background:var(--chip3)"></i>Green chip: playable, call</span>
+      <span><i class="dot" style="background:var(--chip4)"></i>Black chip: long shot, small bet</span>
+    </div>
   </header>
 
-  <section class="flags" aria-label="Compliance flags">
-    <div class="flag"><b>Florida: no per-signature pay</b><p>It's a felony (s.104.186). Price Florida work hourly, daily, or as a flat project fee.</p></div>
-    <div class="flag"><b>Florida: register first</b><p>HB 1205 requires paid circulators to be registered Florida residents and U.S. citizens. Fines run up to $50,000 per violation. Register before you pitch.</p></div>
-    <div class="flag"><b>Other states have their own rules</b><p>Colorado, Arizona, Oregon, Utah, Montana and Missouri require registration or training. Massachusetts, Michigan and Nebraska may ban per-signature pay soon.</p></div>
+  <section class="rules" aria-label="House rules">
+    <h2>House rules (break these and the house wins)</h2>
+    <ol>
+      <li><b>No per-signature pay in Florida.</b> It's a felony (s.104.186). Florida bets get priced hourly, daily, or as a flat project fee.</li>
+      <li><b>Register before you sit down in Florida.</b> HB 1205 requires paid circulators to be registered Florida residents and U.S. citizens. Fines run up to $50,000 per violation.</li>
+      <li><b>Every state has its own table rules.</b> Colorado, Arizona, Oregon, Utah, Montana and Missouri require registration or training. Massachusetts, Michigan and Nebraska may ban per-signature pay soon.</li>
+    </ol>
   </section>
 
-  <div class="chips" role="group" aria-label="Filter">
+  <div class="rack" role="group" aria-label="Filter">
     <button class="chip" id="f-all" data-f="all" aria-pressed="true">All 20</button>
     <button class="chip" id="f-camp" data-f="campaign" aria-pressed="false">Campaigns</button>
     <button class="chip" id="f-firm" data-f="firm" aria-pressed="false">Firms</button>
     <button class="chip" id="f-fl" data-f="fl" aria-pressed="false">Florida edge</button>
-    <button class="chip" id="f-urgent" data-f="urgent" aria-pressed="false">Deadline before Apr 2027</button>
+    <button class="chip" id="f-urgent" data-f="urgent" aria-pressed="false">Table closing</button>
   </div>
 
-  <div class="list" id="list"></div>
+  <div id="tables"></div>
 
-  <footer>Contacts are only what a public source showed: a campaign site, a firm's own site, a state filing, or news coverage. "Not found" means no verified channel turned up, so get it from the state campaign-finance filing. This is a compliance flag list, not legal advice. Check each state's rules with election counsel before you sign.</footer>
+  <footer>Contacts are only what a public source showed: a campaign site, a firm's own site, a state filing, or news coverage. "Not found" means no verified channel turned up, so get it from the state campaign-finance filing. Tiers are our ranking by deadline, money and your Florida edge, not real odds. This is a compliance flag list, not legal advice. Check each state's rules with election counsel before you sign.</footer>
 </div>
 
 <script>
@@ -84,57 +115,71 @@ const P=[
 {t:"firm",fl:1,n:"Pinnacle Partners Management",s:"FL (Miami)",d:"Active now (6 Colorado petitions)",who:"Partners: Albert Comas, Elias Alvarez, Junior Rivera",c:"admin@pinnaclepartnersmgmt.com · (786) 684-8757",why:"A Florida firm already licensed and running 2026 Colorado drives. For Florida's 2028 cycle it needs registered Florida-resident leads, which you are.",next:"Call and offer to run their Central/Treasure Coast Florida crew for 2028, and to staff out-of-state drives now.",w:"",src:"https://pinnaclepartnersmgmt.com/our-team/"},
 {t:"firm",fl:1,n:"SynergySignatures LLC",s:"FL (Palm Beach Gardens)",d:"Active now (7 Colorado petitions)",who:"Brandon Yokie, designated agent",c:"brandon@synergysignatures.com",why:"About an hour south of you and licensed on 7 Colorado petitions in 2026. Its website isn't built yet, so it's a small, growing shop that may want a seasoned manager.",next:"Email asking for a 15-minute call about subcontracting a Florida-resident team for 2028.",w:"",src:"https://www.coloradosos.gov/pubs/elections/petitionEntities/licensees.html"},
 {t:"firm",fl:1,n:"Ground War Marketing",s:"FL (Tampa)",d:"Active now (12+ Colorado petitions)",who:"Austin McCullers, designated agent",c:"groundwarmarketing@outlook.com",why:"High-volume Florida firm, licensed on more Colorado petitions than almost anyone. More volume means it needs more crew leads.",next:"Email offering a ready crew lead for current out-of-state drives plus Florida 2028.",w:"",src:"https://www.coloradosos.gov/pubs/elections/petitionEntities/licensees.html"},
-{t:"campaign",fl:0,u:0,n:"Mainers for a Safe and Healthy Future",s:"ME",d:"June 8, 2027 (~40k of 67,682 in June)",who:"Caroline Alcock, general consultant and spokesperson",c:"Not found. Pull it from Maine Ethics Commission filings.",why:"Cannabis sales repeal. Best funded on this list: $2M from SAM Action, with most spending going to paid gatherers.",next:"Find their filing contact and pitch a crew to close the last ~28k signatures.",w:"Maine: campaigns must file a list of paid circulators. Check Maine's circulator residency rule first.",src:"https://mainemorningstar.com/?p=15638"},
+{t:"campaign",fl:0,n:"Mainers for a Safe and Healthy Future",s:"ME",d:"June 8, 2027 (~40k of 67,682 in June)",who:"Caroline Alcock, general consultant and spokesperson",c:"Not found. Pull it from Maine Ethics Commission filings.",why:"Cannabis sales repeal. Best funded on this list: $2M from SAM Action, with most spending going to paid gatherers.",next:"Find their filing contact and pitch a crew to close the last ~28k signatures.",w:"Maine: campaigns must file a list of paid circulators. Check Maine's circulator residency rule first.",src:"https://mainemorningstar.com/?p=15638"},
 {t:"firm",fl:0,u:1,n:"SignatureDrive.com",s:"MA",d:"Nov 18, 2026 (74,574 sigs per petition)",who:"Harold Hubschman, Founder & President",c:"harold@SignatureDrive.com · (617) 879-8149",why:"Massachusetts has 14 approved 2028 petitions due to town clerks Nov 18. Hubschman filed 10 of them himself, and his firm has billed $4.6M+ since 2025. He uses elite petitioners from around the country.",next:"Call Monday. Offer to be on the ground in Massachusetts within days for the Nov 18 push.",w:"Massachusetts may ban per-signature pay (S.2916 passed both chambers). Confirm before quoting.",src:"https://www.bostonglobe.com/2026/09/22/newsletters/harold-hubschman-ballot-questions-signatures-the-scrum/"},
 {t:"firm",fl:0,u:1,n:"Ballot Access Management",s:"MA",d:"Nov 18, 2026 (Massachusetts round 1)",who:"Alex (general contact)",c:"alex@ballotaccessmanagement.com · (413) 658-7257",why:"Says its workforce is professional career petitioners from a national pool. That's exactly you. 140+ drives.",next:"Call with your 10-year résumé and offer to travel for the Nov 18 deadline.",w:"Same Massachusetts per-signature caution.",src:"https://ballotaccessmanagement.com/"},
 {t:"campaign",fl:0,u:1,n:"Undo the Top Two (California)",s:"CA",d:"Jan 11, 2027 (874,641 sigs)",who:"Steven Maviglio, proponent",c:"steven.maviglio@gmail.com · undothetoptwo.com",why:"Repeals California's top-two primary. A huge signature count and very little time, so it can't make it without paid crews. The proponent claims labor and cross-party support.",next:"Email offering a managed team for a 4–6 week sprint. Ask who their signature firm is.",w:"California: check whether the new paid-circulator registration (AB 421) applies.",src:"https://www.kpbs.org/news/politics/2026/07/16/effort-to-repeal-californias-top-two-jungle-primary-system-is-closer-to-qualifying-for-the-2028-ballot"},
-{t:"firm",fl:0,u:0,n:"The Works Petitioning",s:"Nationwide",d:"Active now (Colorado, California)",who:"Landon Farrell & Jeffery Argrave, Co-founders",c:"info@theworkspetitioning.com · (504) 231-1644 · partner form: theworkspetitioning.com/contact/",why:"Openly recruits other companies to subcontract (\"white-label capable\") with a separate partner form. This is the easiest door on the list.",next:"Fill out the Partner Company form today, then call to follow up.",w:"",src:"https://theworkspetitioning.com/contact/"},
-{t:"firm",fl:0,u:0,n:"FieldWorks LLC",s:"DC",d:"Always hiring",who:"Partners: Chris Gallaway, Lewis Granofsky, Dessari Langston",c:"(202) 667-4400 · fieldworks.com/jobs/",why:"Hires Campaign Directors who drop into a city and run the office. That's the step from circulator to manager.",next:"Apply for Campaign Director and mention your Florida residency for 2028.",w:"",src:"https://fieldworks.com/jobs/"},
+{t:"firm",fl:0,n:"The Works Petitioning",s:"Nationwide",d:"Active now (Colorado, California)",who:"Landon Farrell & Jeffery Argrave, Co-founders",c:"info@theworkspetitioning.com · (504) 231-1644 · partner form: theworkspetitioning.com/contact/",why:"Openly recruits other companies to subcontract (\"white-label capable\") with a separate partner form. This is the easiest door on the list.",next:"Fill out the Partner Company form today, then call to follow up.",w:"",src:"https://theworkspetitioning.com/contact/"},
+{t:"firm",fl:0,n:"FieldWorks LLC",s:"DC",d:"Always hiring",who:"Partners: Chris Gallaway, Lewis Granofsky, Dessari Langston",c:"(202) 667-4400 · fieldworks.com/jobs/",why:"Hires Campaign Directors who drop into a city and run the office. That's the step from circulator to manager.",next:"Apply for Campaign Director and mention your Florida residency for 2028.",w:"",src:"https://fieldworks.com/jobs/"},
 {t:"campaign",fl:0,u:1,n:"California food sales-tax exemption",s:"CA",d:"Mar 24, 2027 (874,641 sigs)",who:"John Pimentel, proponent",c:"John@JohnPimentel.com · (650) 269-8933",why:"Cleared to circulate Sept 25, 2026, with a big target and a short window. Funding not yet public.",next:"Email asking whether they've hired a signature firm, and offer a feasibility call.",w:"Same California registration check.",src:"https://www.sos.ca.gov/administration/news-releases-and-advisories/2026-news-releases-and-advisories/california-secretary-state-shirley-n-weber-phd-announces-proposed-initiative-has-entered-circulation-exempts-additional-food-pro"},
-{t:"firm",fl:0,u:0,n:"Campaign & Petition Management LLC",s:"CO",d:"Active now",who:"Bryan Crumpton, designated agent",c:"Bryan@campaignpetitionmanagement.com · 720-299-9088",why:"Paid nearly $3M for Michigan petition work in 2025–26 and licensed in Colorado for 2026. Big contracts mean they need managers.",next:"Call and pitch yourself as a project manager for their next Michigan or Colorado drive.",w:"Colorado: you need a state training certificate before you can be paid.",src:"https://www.votebeat.org/michigan/2026/01/20/petition-signature-gathering-lying-ballot-questions-constitutional-amendments/"},
-{t:"campaign",fl:0,u:0,n:"Ohio Equal Rights",s:"OH",d:"July 1, 2027 (442,958 per amendment)",who:"Lis Regula, Executive Co-Chair",c:"ohioequalrights.org",why:"Two amendments, about 886,000 signatures total. That's the biggest field job here. They delayed to 2027 to regroup, so now is when they plan.",next:"Send a short proposal for a paid crew to back up their volunteers.",w:"Ohio: check the 2025 law changes (SB 153) before quoting.",src:"https://thebuckeyeflame.com/2026/06/17/organizers-postpone-ohio-equal-rights-ballot-initiatives-to-2027/"},
-{t:"firm",fl:0,u:0,n:"Landslide Political",s:"UT",d:"Active (5 initiatives in 2024)",who:"Rebecca Rawson, Director of Business Development",c:"win@landslidepolitical.com · 801-747-9147",why:"Ran drives in Montana and Nebraska. Its business development lead is the right person to talk to about subcontracting.",next:"Email Rebecca with a one-page capabilities sheet.",w:"Utah: hourly pay only, badge and training required.",src:"https://www.landslidepolitical.com/theteam"},
+{t:"firm",fl:0,n:"Campaign & Petition Management LLC",s:"CO",d:"Active now",who:"Bryan Crumpton, designated agent",c:"Bryan@campaignpetitionmanagement.com · 720-299-9088",why:"Paid nearly $3M for Michigan petition work in 2025–26 and licensed in Colorado for 2026. Big contracts mean they need managers.",next:"Call and pitch yourself as a project manager for their next Michigan or Colorado drive.",w:"Colorado: you need a state training certificate before you can be paid.",src:"https://www.votebeat.org/michigan/2026/01/20/petition-signature-gathering-lying-ballot-questions-constitutional-amendments/"},
+{t:"campaign",fl:0,n:"Ohio Equal Rights",s:"OH",d:"July 1, 2027 (442,958 per amendment)",who:"Lis Regula, Executive Co-Chair",c:"ohioequalrights.org",why:"Two amendments, about 886,000 signatures total. That's the biggest field job here. They delayed to 2027 to regroup, so now is when they plan.",next:"Send a short proposal for a paid crew to back up their volunteers.",w:"Ohio: check the 2025 law changes (SB 153) before quoting.",src:"https://thebuckeyeflame.com/2026/06/17/organizers-postpone-ohio-equal-rights-ballot-initiatives-to-2027/"},
+{t:"firm",fl:0,n:"Landslide Political",s:"UT",d:"Active (5 initiatives in 2024)",who:"Rebecca Rawson, Director of Business Development",c:"win@landslidepolitical.com · 801-747-9147",why:"Ran drives in Montana and Nebraska. Its business development lead is the right person to talk to about subcontracting.",next:"Email Rebecca with a one-page capabilities sheet.",w:"Utah: hourly pay only, badge and training required.",src:"https://www.landslidepolitical.com/theteam"},
 {t:"campaign",fl:0,u:1,n:"Healthcare for All Maine",s:"ME",d:"Apr 24, 2027 (20k+ of 67,682 in June)",who:"Sophie Garner & Buddy Moore, Field Directors",c:"healthcareforallmaine.org",why:"About a third done and relying on volunteers. Pushing at the polls Nov 3. May need paid help to finish.",next:"After Nov 3, ask what their count is and offer a paid closing crew.",w:"Same Maine residency and disclosure check.",src:"https://mainemorningstar.com/2026/06/17/campaign-to-put-universal-healthcare-on-2027-ballot-gains-momentum/"},
-{t:"firm",fl:0,u:0,n:"Victory Field Operations",s:"MI",d:"Applications always open",who:"Meghan Reckling, CEO · Luke Derheim, Director of Operations",c:"info@victory-fo.com · (517) 294-7761",why:"Did 2025–26 Michigan petition work, and Michigan 2028 campaigns are already planning.",next:"Email Luke offering to lead a team for Michigan 2028.",w:"Michigan may ban per-signature pay (passed the state Senate).",src:"https://www.victoryfieldoperations.com/leadership/"},
-{t:"firm",fl:0,u:0,n:"Blitz Canvassing",s:"CO",d:"Active now (5 Colorado petitions)",who:"Jake Zambrano, designated agent",c:"info@blitzcanvassing.com · 303-916-2345",why:"Running five Colorado petitions right now.",next:"Call about crew-lead openings.",w:"Colorado training and registration required.",src:"https://blitzcanvassing.com/contact-us/"},
-{t:"firm",fl:0,u:0,n:"Petition Partners",s:"AZ",d:"Hiring now",who:"Andrew Chavez, Owner",c:"info@petitionpartners.com · 602-358-8805",why:"Nearly 500 measures qualified since 1999, and it says many of its field leaders started as circulators.",next:"Text or call to apply as a field leader for Arizona 2028.",w:"Arizona: per-signature pay is banned and paid circulators must register.",src:"https://petitionpartners.com/"},
+{t:"firm",fl:0,n:"Victory Field Operations",s:"MI",d:"Applications always open",who:"Meghan Reckling, CEO · Luke Derheim, Director of Operations",c:"info@victory-fo.com · (517) 294-7761",why:"Did 2025–26 Michigan petition work, and Michigan 2028 campaigns are already planning.",next:"Email Luke offering to lead a team for Michigan 2028.",w:"Michigan may ban per-signature pay (passed the state Senate).",src:"https://www.victoryfieldoperations.com/leadership/"},
+{t:"firm",fl:0,n:"Blitz Canvassing",s:"CO",d:"Active now (5 Colorado petitions)",who:"Jake Zambrano, designated agent",c:"info@blitzcanvassing.com · 303-916-2345",why:"Running five Colorado petitions right now.",next:"Call about crew-lead openings.",w:"Colorado training and registration required.",src:"https://blitzcanvassing.com/contact-us/"},
+{t:"firm",fl:0,n:"Petition Partners",s:"AZ",d:"Hiring now",who:"Andrew Chavez, Owner",c:"info@petitionpartners.com · 602-358-8805",why:"Nearly 500 measures qualified since 1999, and it says many of its field leaders started as circulators.",next:"Text or call to apply as a field leader for Arizona 2028.",w:"Arizona: per-signature pay is banned and paid circulators must register.",src:"https://petitionpartners.com/"},
 {t:"firm",fl:0,u:1,n:"Ballot Access Pros",s:"WY (works nationwide)",d:"Hiring travel crews",who:"Kabir Wolf, designated agent",c:"admin@ballotaccesspros.com · (833) 496-1650",why:"Hires traveling door-to-door crews with hotel and car covered. On 7 Colorado petitions.",next:"Call about crew-lead roles for the winter Massachusetts and California pushes.",w:"",src:"https://ballotaccesspros.com/apply"},
-{t:"campaign",fl:0,u:0,n:"Americans for Citizen Voting – Michigan",s:"MI",d:"2028 (~446k sigs)",who:"Paul Jacob, Chair",c:"Not found. Check Michigan campaign-finance filings.",why:"Got 750k+ signatures in 2026 but missed the ballot by a few. It's coming back with a bigger cushion and has proven it pays firms.",next:"Find the committee contact and pitch quality control: cleaner signatures and fewer rejections.",w:"Same Michigan per-signature caution.",src:"https://www.newsfromthestates.com/node/426976"}
+{t:"campaign",fl:0,n:"Americans for Citizen Voting – Michigan",s:"MI",d:"2028 (~446k sigs)",who:"Paul Jacob, Chair",c:"Not found. Check Michigan campaign-finance filings.",why:"Got 750k+ signatures in 2026 but missed the ballot by a few. It's coming back with a bigger cushion and has proven it pays firms.",next:"Find the committee contact and pitch quality control: cleaner signatures and fewer rejections.",w:"Same Michigan per-signature caution.",src:"https://www.newsfromthestates.com/node/426976"}
 ];
-const urgentCamp=new Set(["Undo the Top Two (California)","California food sales-tax exemption","Healthcare for All Maine","SignatureDrive.com","Ballot Access Management","Ballot Access Pros"]);
-const list=document.getElementById("list");
+const TIERS=[
+ {cls:"t1",from:0,to:4,name:"Royal Flush",cards:"A♠ K♠ Q♠ J♠ 10♠",note:"Your Florida edge. Nobody from out of state can play these hands. Bet big."},
+ {cls:"t2",from:4,to:10,name:"Four of a Kind",cards:"K♥ K♦ K♣ K♠",red:1,note:"Money on the table and a deadline close. Raise this week."},
+ {cls:"t3",from:10,to:16,name:"Full House",cards:"Q♦ Q♣ Q♥ 9♠ 9♦",red:1,note:"Solid hands with more time on the clock. Call and stay in."},
+ {cls:"t4",from:16,to:20,name:"Long Shot",cards:"7♣ 7♠ 3♦",note:"Worth a small bet. Low cost to place, but don't chase."}
+];
+const SUITS=["♠","♥","♦","♣"];
 function esc(s){return s.replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
-P.forEach((p,i)=>{
-  const el=document.createElement("article");el.className="row";
-  el.dataset.t=p.t;el.dataset.fl=p.fl;el.dataset.u=urgentCamp.has(p.n)?1:0;
-  el.innerHTML=`<div class="rank">${i+1}</div>
-  <div class="head"><h2 class="name">${esc(p.n)}</h2><span class="pill ${p.t==="firm"?"firm":""}">${p.t}</span><span class="pill">${esc(p.s)}</span>${el.dataset.u==1?'<span class="pill due">urgent</span>':''}</div>
-  <div class="body">
-    <div class="meta">
-      <div><span class="k">Deadline / status</span>${esc(p.d)}</div>
-      <div><span class="k">Decision-maker</span>${esc(p.who)}</div>
-      <div><span class="k">Contact</span><span class="contact">${esc(p.c)}</span><button class="copy" type="button" data-c="${esc(p.c)}">copy</button></div>
-    </div>
-    <p class="why">${esc(p.why)}</p>
-    <p class="next"><b>Next move:</b> ${esc(p.next)}</p>
-    ${p.w?`<p class="warn">⚠ ${esc(p.w)}</p>`:""}
-    <div class="src"><a href="${p.src}" target="_blank" rel="noopener">Source</a></div>
-  </div>`;
-  list.appendChild(el);
+const tables=document.getElementById("tables");
+TIERS.forEach(T=>{
+  const sec=document.createElement("section");sec.className="tier "+T.cls;
+  sec.innerHTML=`<div class="tier-head"><h2>${T.name}</h2><span class="cards ${T.red?'red':''}">${T.cards}</span><p>${T.note}</p></div>`;
+  P.slice(T.from,T.to).forEach((p,j)=>{
+    const i=T.from+j, s=SUITS[i%4];
+    const el=document.createElement("article");el.className="hand";
+    el.dataset.t=p.t;el.dataset.fl=p.fl;el.dataset.u=p.u?1:0;
+    el.innerHTML=`<span class="suit ${s==='♥'||s==='♦'?'r':''}" aria-hidden="true">${s}</span>
+    <div class="pchip">${i+1}</div>
+    <div class="head"><h3 class="name">${esc(p.n)}</h3><span class="tag ${p.t==='firm'?'firm':'camp'}">${p.t==='firm'?'dealer · firm':'player · campaign'}</span><span class="tag">${esc(p.s)}</span>${p.u?'<span class="tag hot">table closing</span>':''}</div>
+    <div class="body">
+      <div class="meta">
+        <div><span class="k">Table closes</span>${esc(p.d)}</div>
+        <div><span class="k">Who holds the chips</span>${esc(p.who)}</div>
+        <div><span class="k">Cashier window</span><span class="contact">${esc(p.c)}</span><button class="copy" type="button" data-c="${esc(p.c)}">copy</button></div>
+      </div>
+      <p class="why">${esc(p.why)}</p>
+      <p class="play"><b>Your play</b>${esc(p.next)}</p>
+      ${p.w?`<p class="warn">⚠ House rule: ${esc(p.w)}</p>`:""}
+      <div class="src"><a href="${p.src}" target="_blank" rel="noopener">Source</a></div>
+    </div>`;
+    sec.appendChild(el);
+  });
+  tables.appendChild(sec);
 });
-list.addEventListener("click",e=>{
+tables.style.display="grid";tables.style.gap="28px";
+tables.addEventListener("click",e=>{
   const b=e.target.closest(".copy");if(!b)return;
-  const txt=b.dataset.c;
   const done=()=>{b.textContent="copied";setTimeout(()=>b.textContent="copy",1400)};
-  try{navigator.clipboard.writeText(txt).then(done,()=>{sel(b);});}catch(_){sel(b)}
+  try{navigator.clipboard.writeText(b.dataset.c).then(done,()=>sel(b))}catch(_){sel(b)}
 });
 function sel(b){const r=document.createRange();r.selectNodeContents(b.previousElementSibling);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="press ⌘C"}
 const chips=[...document.querySelectorAll(".chip")];
 chips.forEach(c=>c.addEventListener("click",()=>{
   chips.forEach(x=>x.setAttribute("aria-pressed",x===c));
   const f=c.dataset.f;
-  [...list.children].forEach(r=>{
+  document.querySelectorAll(".hand").forEach(r=>{
     r.hidden=!(f==="all"||(f==="campaign"&&r.dataset.t==="campaign")||(f==="firm"&&r.dataset.t==="firm")||(f==="fl"&&r.dataset.fl==="1")||(f==="urgent"&&r.dataset.u==="1"));
   });
+  document.querySelectorAll(".tier").forEach(t=>{t.hidden=![...t.querySelectorAll(".hand")].some(h=>!h.hidden)});
 }));
 </script>

@@ -76,23 +76,23 @@ footer{color:var(--cream-muted);font-size:13px;max-width:75ch;margin:0 auto;text
 
 <div class="wrap">
   <header class="marquee">
-    <div class="eyebrow">The house is open · odds checked Oct 24, 2026</div>
-    <h1>Petition Prospect Table</h1>
-    <p class="sub">Twenty hands, dealt from best to worst. <b>Campaigns</b> are the players with the money. <b>Firms</b> are the dealers who need help running tables. Bet your time where the odds and the payout are highest.</p>
+    <div class="eyebrow">Prospect list · verified Oct 24, 2026</div>
+    <h1>Top 20 Petition Prospects</h1>
+    <p class="sub">Ranked from strongest to weakest. <b>Campaigns</b> need signatures and pay for them. <b>Petition firms</b> win those contracts and need experienced leads to run crews. Start at the top.</p>
     <div class="legend">
-      <span><i class="dot" style="background:var(--chip1)"></i>Red chip: royal flush, bet big</span>
-      <span><i class="dot" style="background:var(--chip2)"></i>Blue chip: strong hand, raise</span>
-      <span><i class="dot" style="background:var(--chip3)"></i>Green chip: playable, call</span>
-      <span><i class="dot" style="background:var(--chip4)"></i>Black chip: long shot, small bet</span>
+      <span><i class="dot" style="background:var(--chip1)"></i>Priority 1: Florida advantage</span>
+      <span><i class="dot" style="background:var(--chip2)"></i>Priority 2: funded, deadline soon</span>
+      <span><i class="dot" style="background:var(--chip3)"></i>Priority 3: solid, more time</span>
+      <span><i class="dot" style="background:var(--chip4)"></i>Priority 4: worth a contact</span>
     </div>
   </header>
 
-  <section class="rules" aria-label="House rules">
-    <h2>House rules (break these and the house wins)</h2>
+  <section class="rules" aria-label="Compliance rules">
+    <h2>Compliance rules to know first</h2>
     <ol>
-      <li><b>No per-signature pay in Florida.</b> It's a felony (s.104.186). Florida bets get priced hourly, daily, or as a flat project fee.</li>
-      <li><b>Register before you sit down in Florida.</b> HB 1205 requires paid circulators to be registered Florida residents and U.S. citizens. Fines run up to $50,000 per violation.</li>
-      <li><b>Every state has its own table rules.</b> Colorado, Arizona, Oregon, Utah, Montana and Missouri require registration or training. Massachusetts, Michigan and Nebraska may ban per-signature pay soon.</li>
+      <li><b>No per-signature pay in Florida.</b> It's a felony (s.104.186). Florida work gets priced hourly, daily, or as a flat project fee.</li>
+      <li><b>Register before you work in Florida.</b> HB 1205 requires paid circulators to be registered Florida residents and U.S. citizens. Fines run up to $50,000 per violation.</li>
+      <li><b>Every state has its own rules.</b> Colorado, Arizona, Oregon, Utah, Montana and Missouri require registration or training. Massachusetts, Michigan and Nebraska may ban per-signature pay soon.</li>
     </ol>
   </section>
 
@@ -100,13 +100,13 @@ footer{color:var(--cream-muted);font-size:13px;max-width:75ch;margin:0 auto;text
     <button class="chip" id="f-all" data-f="all" aria-pressed="true">All 20</button>
     <button class="chip" id="f-camp" data-f="campaign" aria-pressed="false">Campaigns</button>
     <button class="chip" id="f-firm" data-f="firm" aria-pressed="false">Firms</button>
-    <button class="chip" id="f-fl" data-f="fl" aria-pressed="false">Florida edge</button>
-    <button class="chip" id="f-urgent" data-f="urgent" aria-pressed="false">Table closing</button>
+    <button class="chip" id="f-fl" data-f="fl" aria-pressed="false">Florida advantage</button>
+    <button class="chip" id="f-urgent" data-f="urgent" aria-pressed="false">Deadline soon</button>
   </div>
 
   <div id="tables"></div>
 
-  <footer>Contacts are only what a public source showed: a campaign site, a firm's own site, a state filing, or news coverage. "Not found" means no verified channel turned up, so get it from the state campaign-finance filing. Tiers are our ranking by deadline, money and your Florida edge, not real odds. This is a compliance flag list, not legal advice. Check each state's rules with election counsel before you sign.</footer>
+  <footer>Contacts are only what a public source showed: a campaign site, a firm's own site, a state filing, or news coverage. "Not found" means no verified channel turned up, so get it from the state campaign-finance filing. Priority tiers rank each prospect by deadline, budget and Florida residency advantage. This is a compliance flag list, not legal advice. Check each state's rules with election counsel before you sign.</footer>
 </div>
 
 <script>
@@ -133,10 +133,10 @@ const P=[
 {t:"campaign",fl:0,n:"Americans for Citizen Voting – Michigan",s:"MI",d:"2028 (~446k sigs)",who:"Paul Jacob, Chair",c:"Not found. Check Michigan campaign-finance filings.",why:"Got 750k+ signatures in 2026 but missed the ballot by a few. It's coming back with a bigger cushion and has proven it pays firms.",next:"Find the committee contact and pitch quality control: cleaner signatures and fewer rejections.",w:"Same Michigan per-signature caution.",src:"https://www.newsfromthestates.com/node/426976"}
 ];
 const TIERS=[
- {cls:"t1",from:0,to:4,name:"Royal Flush",cards:"A♠ K♠ Q♠ J♠ 10♠",note:"Your Florida edge. Nobody from out of state can play these hands. Bet big."},
- {cls:"t2",from:4,to:10,name:"Four of a Kind",cards:"K♥ K♦ K♣ K♠",red:1,note:"Money on the table and a deadline close. Raise this week."},
- {cls:"t3",from:10,to:16,name:"Full House",cards:"Q♦ Q♣ Q♥ 9♠ 9♦",red:1,note:"Solid hands with more time on the clock. Call and stay in."},
- {cls:"t4",from:16,to:20,name:"Long Shot",cards:"7♣ 7♠ 3♦",note:"Worth a small bet. Low cost to place, but don't chase."}
+ {cls:"t1",from:0,to:4,name:"Priority 1 · Florida advantage",cards:"A♠ K♠ Q♠ J♠ 10♠",note:"Florida law requires registered in-state circulators, so out-of-state crews can't do this work. Contact these first."},
+ {cls:"t2",from:4,to:10,name:"Priority 2 · Funded, deadline soon",cards:"K♥ K♦ K♣ K♠",red:1,note:"Budget is in place and the deadline is close. Contact this week."},
+ {cls:"t3",from:10,to:16,name:"Priority 3 · Solid, more time",cards:"Q♦ Q♣ Q♥ 9♠ 9♦",red:1,note:"Strong prospects with later deadlines. Start the conversation now and follow up."},
+ {cls:"t4",from:16,to:20,name:"Priority 4 · Worth a contact",cards:"7♣ 7♠ 3♦",note:"Lower odds or unclear budget. One email or call, then move on if there's no reply."}
 ];
 const SUITS=["♠","♥","♦","♣"];
 function esc(s){return s.replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
@@ -150,16 +150,16 @@ TIERS.forEach(T=>{
     el.dataset.t=p.t;el.dataset.fl=p.fl;el.dataset.u=p.u?1:0;
     el.innerHTML=`<span class="suit ${s==='♥'||s==='♦'?'r':''}" aria-hidden="true">${s}</span>
     <div class="pchip">${i+1}</div>
-    <div class="head"><h3 class="name">${esc(p.n)}</h3><span class="tag ${p.t==='firm'?'firm':'camp'}">${p.t==='firm'?'dealer · firm':'player · campaign'}</span><span class="tag">${esc(p.s)}</span>${p.u?'<span class="tag hot">table closing</span>':''}</div>
+    <div class="head"><h3 class="name">${esc(p.n)}</h3><span class="tag ${p.t==='firm'?'firm':'camp'}">${p.t==='firm'?'petition firm':'campaign'}</span><span class="tag">${esc(p.s)}</span>${p.u?'<span class="tag hot">deadline soon</span>':''}</div>
     <div class="body">
       <div class="meta">
-        <div><span class="k">Table closes</span>${esc(p.d)}</div>
-        <div><span class="k">Who holds the chips</span>${esc(p.who)}</div>
-        <div><span class="k">Cashier window</span><span class="contact">${esc(p.c)}</span><button class="copy" type="button" data-c="${esc(p.c)}">copy</button></div>
+        <div><span class="k">Deadline / status</span>${esc(p.d)}</div>
+        <div><span class="k">Decision-maker</span>${esc(p.who)}</div>
+        <div><span class="k">Contact</span><span class="contact">${esc(p.c)}</span><button class="copy" type="button" data-c="${esc(p.c)}">copy</button></div>
       </div>
       <p class="why">${esc(p.why)}</p>
-      <p class="play"><b>Your play</b>${esc(p.next)}</p>
-      ${p.w?`<p class="warn">⚠ House rule: ${esc(p.w)}</p>`:""}
+      <p class="play"><b>Next step</b>${esc(p.next)}</p>
+      ${p.w?`<p class="warn">⚠ Compliance: ${esc(p.w)}</p>`:""}
       <div class="src"><a href="${p.src}" target="_blank" rel="noopener">Source</a></div>
     </div>`;
     sec.appendChild(el);
